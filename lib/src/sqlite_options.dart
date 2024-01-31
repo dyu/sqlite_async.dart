@@ -10,16 +10,20 @@ class SqliteOptions {
   /// The WAL may grow large than this limit during writes, but SQLite will
   /// attempt to truncate the file afterwards.
   final int? journalSizeLimit;
+  
+  final String initialPragma;
 
   const SqliteOptions.defaults()
       : journalMode = SqliteJournalMode.wal,
         journalSizeLimit = 6 * 1024 * 1024, // 1.5x the default checkpoint size
-        synchronous = SqliteSynchronous.normal;
+        synchronous = SqliteSynchronous.normal,
+        initialPragma = '';
 
   const SqliteOptions(
       {this.journalMode = SqliteJournalMode.wal,
       this.journalSizeLimit = 6 * 1024 * 1024,
-      this.synchronous = SqliteSynchronous.normal});
+      this.synchronous = SqliteSynchronous.normal,
+      this.initialPragma = ''});
 }
 
 /// SQLite journal mode. Set on the primary connection.

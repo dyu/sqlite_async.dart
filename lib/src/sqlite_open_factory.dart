@@ -32,16 +32,16 @@ class DefaultSqliteOpenFactory implements SqliteOpenFactory {
     if (options.primaryConnection && sqliteOptions.journalMode != null) {
       // Persisted - only needed on the primary connection
       statements
-          .add('PRAGMA journal_mode = ${sqliteOptions.journalMode!.name}');
+          .add('PRAGMA journal_mode = ${sqliteOptions.journalMode!.name};');
     }
     if (!options.readOnly && sqliteOptions.journalSizeLimit != null) {
       // Needed on every writable connection
       statements.add(
-          'PRAGMA journal_size_limit = ${sqliteOptions.journalSizeLimit!}');
+          'PRAGMA journal_size_limit = ${sqliteOptions.journalSizeLimit!};');
     }
     if (sqliteOptions.synchronous != null) {
       // Needed on every connection
-      statements.add('PRAGMA synchronous = ${sqliteOptions.synchronous!.name}');
+      statements.add('PRAGMA synchronous = ${sqliteOptions.synchronous!.name};');
     }
     return statements;
   }
@@ -51,9 +51,15 @@ class DefaultSqliteOpenFactory implements SqliteOpenFactory {
     final mode = options.openMode;
     var db = sqlite.sqlite3.open(path, mode: mode, mutex: false);
 
+    if (sqliteOptions.initialPragma.isNotEmpty) {
+      db.execute(sqliteOptions.initialPragma);
+    }
+    /*
     for (var statement in pragmaStatements(options)) {
       db.execute(statement);
     }
+    */
+    db.execute(pragmaStatements(options).join('\n'));
     return db;
   }
 }
