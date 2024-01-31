@@ -11,6 +11,11 @@ import 'package:test_api/src/backend/invoker.dart';
 
 const defaultSqlitePath = 'libsqlite3.so.0';
 // const defaultSqlitePath = './sqlite-autoconf-3410100/.libs/libsqlite3.so.0';
+final arch = Process.runSync('/usr/bin/arch', []).stdout.toString().trim();
+
+String _resolveLib(String uname) {
+  return '${Directory.current.path}/tools/$uname-$arch/lib/libsqlite3mc.so';
+}
 
 class TestSqliteOpenFactory extends DefaultSqliteOpenFactory {
   String sqlitePath;
@@ -22,8 +27,16 @@ class TestSqliteOpenFactory extends DefaultSqliteOpenFactory {
 
   @override
   sqlite.Database open(SqliteOpenOptions options) {
+    /*
     sqlite_open.open.overrideFor(sqlite_open.OperatingSystem.linux, () {
       return DynamicLibrary.open(sqlitePath);
+    });
+    */
+    sqlite_open.open.overrideFor(sqlite_open.OperatingSystem.linux, () {
+      return DynamicLibrary.open(_resolveLib('Linux'));
+    });
+    sqlite_open.open.overrideFor(sqlite_open.OperatingSystem.macOS, () {
+      return DynamicLibrary.open(_resolveLib('Darwin'));
     });
     final db = super.open(options);
 
