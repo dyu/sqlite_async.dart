@@ -6,7 +6,11 @@ environment:
   sdk: '>=3.2.0 <4.0.0'
 
 dependencies:
-  sqlite3: '^2.3.0'
+  sqlite3:
+    git:
+      url: https://github.com/dyu/sqlite3.dart
+      path: sqlite3
+      ref: mc
   async: ^2.10.0
   collection: ^1.17.0
 
